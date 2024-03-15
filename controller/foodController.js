@@ -1,4 +1,5 @@
 const Food = require("../models/food");
+const axios = require('axios');
 
 exports.getFoods = async (req, res) => {
   try {
@@ -81,3 +82,45 @@ exports.searchFoodByLetters = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+
+exports.recommendFoodBasedOnWeather = async (req, res) => {
+  try {
+      // Fetch weather data for Mangaluru (dummy data for demonstration)
+      const weatherData = {
+          place: { name: 'Mangaluru' },
+          currentConditions: { temp: 25, description: 'Sunny' }
+      };
+
+      // Extract current temperature from weather data
+      const currentTemperature = weatherData.currentConditions.temp;
+
+      // Recommend food based on temperature
+      const recommendedFood = recommendFoodBasedOnTemperature(currentTemperature);
+
+      // Respond with recommended food and weather information
+      res.json({
+          success: true,
+          weather: {
+              city: weatherData.place.name,
+              temperature: currentTemperature,
+              description: weatherData.currentConditions.description
+          },
+          recommendedFood: recommendedFood
+      });
+  } catch (error) {
+      console.error('Error fetching weather data:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+// Function to recommend food based on temperature
+function recommendFoodBasedOnTemperature(temperature) {
+    if (temperature < 20) {
+        return ['Pizza', 'Chocolate Brownie']; // Cold weather food
+    } else if (temperature >= 20 && temperature <= 30) {
+        return ['Garden Salad']; // Moderate weather food
+    } else {
+        return ['Garden Salad']; // Hot weather food
+    }
+}

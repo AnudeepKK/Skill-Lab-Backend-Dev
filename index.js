@@ -10,6 +10,9 @@ const foodRoutes = require("./routes/foodRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const User = require("./models/user");
 const logoutRoutes = require("./logout/logout")
+const ratingRoutes = require("./routes/ratingRoutes");
+const cron = require('node-cron');
+const Order = require('./models/order');
 
 const app = express();
 app.use(express.json());
@@ -96,6 +99,33 @@ app.use("/api", authRoutes);
 app.use("/api", foodRoutes);
 app.use("/api", orderRoutes);
 app.use("/api", logoutRoutes);
+app.use("/api",ratingRoutes);
+
+
+const checkAndUpdateOrderStatus = async () => {
+  try {
+    console.log("working");
+      const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000); // Two minutes ago
+      const filter = {
+          status: 'pending',
+          createdAt: { $lte: twoMinutesAgo },
+          status: { $ne: 'cancelled' }
+      };
+      const update = { status: 'cancelled' }; // Update status to cancelled
+
+      const cancelledOrders = await Order.updateMany(filter, update);
+
+      if (cancelledOrders.nModified > 0) {
+          console.log(`Cancelled ${cancelledOrders.nModified} orders.`);
+      }
+  } catch (error) {
+      console.error('Error occurred while checking and updating orders:', error);
+  }
+};
+
+// Define the cron job to run every two minutes
+cron.schedule('*/2 * * * *', checkAndUpdateOrderStatus);
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

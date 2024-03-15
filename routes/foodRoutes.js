@@ -12,5 +12,6 @@ router.get('/foods/:category', foodController.getFoodsByCategory);
 router.post('/addfoods', foodController.addFood);
 router.get("/foods/search/:name", foodController.searchFoodByName);
 router.get("/foods/suggest/:letters", foodController.searchFoodByLetters);
+router.get('/recommendation', foodController.recommendFoodBasedOnWeather);
 
 module.exports = router;

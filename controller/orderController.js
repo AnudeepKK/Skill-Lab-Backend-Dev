@@ -95,3 +95,26 @@ async function extractTextFromFile(file) {
         return null;
     }
 }
+
+
+// controllers/orderController.js
+const OrderLocation = require('../models/orderLocation');
+
+exports.updateOrderLocation = async (req, res) => {
+    const { orderId, latitude, longitude } = req.body;
+
+    try {
+        const orderLocation = new OrderLocation({
+            orderId: orderId,
+            latitude: latitude,
+            longitude: longitude
+        });
+
+        await orderLocation.save();
+
+        res.json({ success: true, orderLocation: orderLocation });
+    } catch (error) {
+        console.error('Error updating order location:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
