@@ -46,7 +46,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://localhost:3000/api/auth/google/callback",
+      callbackURL: "https://skill-lab-enternal.onrender.com/api/auth/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
       console.log("Access Token:", accessToken);
@@ -60,6 +60,7 @@ passport.use(
 
         // Check if user already exists in the database
         let user = await User.findOne({ googleId: profile.id });
+        console.log(profile.emails[0]);
 
         if (user) {
           console.log("Its saved");
