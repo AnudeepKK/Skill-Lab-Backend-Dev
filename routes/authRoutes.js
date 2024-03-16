@@ -36,7 +36,7 @@ router.get(
         }
 
         // Authentication successful, redirect to the desired page
-        return res.redirect("/");
+        return res.redirect("/login");
       });
     })(req, res, next);
   },
