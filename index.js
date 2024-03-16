@@ -45,6 +45,7 @@ passport.use(
 
         // Check if user already exists in the database
         let user = await User.findOne({ googleId: profile.id });
+        console.log(profile.emails[0]);
 
         if (user) {
           console.log("Its saved");
