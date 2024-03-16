@@ -26,6 +26,20 @@ db.once("open", () => {
   console.log("Connected to MongoDB");
 });
 
+app.use(
+  session({
+    secret: "ddndnsjdnjd",
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+
+
+
 // Passport.js for Google authentication
 passport.use(
   new GoogleStrategy(
@@ -35,6 +49,7 @@ passport.use(
       callbackURL: "http://localhost:3000/api/auth/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
+      console.log("Access Token:", accessToken);
       try {
         if (!profile || !profile.emails || !profile.emails[0]) {
           // Check if necessary profile information is undefined
@@ -48,6 +63,8 @@ passport.use(
 
         if (user) {
           console.log("Its saved");
+          console.log(profile.emails[0].value);
+          
           return done(null, user);
         } else {
           // If the user doesn't exist, create a new user
@@ -83,16 +100,6 @@ passport.deserializeUser(async (id, done) => {
 });
 
 // Express session middleware
-app.use(
-  session({
-    secret: "ddndnsjdnjd",
-    resave: false,
-    saveUninitialized: true,
-  })
-);
-
-app.use(passport.initialize());
-app.use(passport.session());
 
 // Routes
 app.use("/api", authRoutes);
@@ -100,6 +107,15 @@ app.use("/api", foodRoutes);
 app.use("/api", orderRoutes);
 app.use("/api", logoutRoutes);
 app.use("/api",ratingRoutes);
+
+// Example route in authRoutes.js or any other relevant route file
+app.get('/profile', (req, res) => {
+  console.log('Authenticated user:', req.user);
+  res.send('Profile Page'); // Respond with the profile page
+});
+
+
+
 
 
 const checkAndUpdateOrderStatus = async () => {
